@@ -1,0 +1,23 @@
+from belaster import *
+from os import makedirs, rmdir
+
+
+dirname = "blank"
+
+
+def touch_dir(env):
+	makedirs(dirname)
+
+Rule(
+	targets={Directory(dirname)},
+	recipe=[touch_dir]
+)
+
+
+def rm_dir(env):
+	rmdir(dirname)
+
+Rule(
+	targets={Abstract("clean")},
+	recipe=[rm_dir]
+)

@@ -1,0 +1,23 @@
+from belaster import *
+from pathlib import Path
+
+
+filename = "blank"
+
+
+def touch_file(env):
+	Path(filename).touch()
+
+Rule(
+	targets={File(filename)},
+	recipe=[touch_file]
+)
+
+
+def remove_file(env):
+	Path(filename).unlink()
+
+Rule(
+	targets={Abstract("clean")},
+	recipe=[remove_file]
+)

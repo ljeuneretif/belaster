@@ -1,0 +1,4 @@
+from belaster import *
+
+Rule(targets={Abstract("all")})
+Rule(targets={Abstract("clean")})

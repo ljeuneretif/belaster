@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+
+from belaster.engine.application_context import ApplicationContext
+from belaster.engine.application_context_binder import ApplicationContextBinder
+from belaster.engine.import_belaster_file import BELASTER_FILE_DEFAULT_NAME, import_belaster_file
+from belaster.engine.mute_stdout import MuteStdout
+from os import getcwd
+
+
+# Create application context and bind it.
+context = ApplicationContext()
+ApplicationContextBinder.application_context = context
+
+
+with MuteStdout():
+	# Load User's Belaster file.
+	ubm = import_belaster_file(path=getcwd(), filename=BELASTER_FILE_DEFAULT_NAME)
+
+
+targets = list(context.map_cwd_relative_name_to_targets.keys())
+
+
+print(" ".join(sorted(targets)))

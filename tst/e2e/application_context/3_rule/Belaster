@@ -1,0 +1,5 @@
+from belaster import *
+
+Rule(targets={Abstract("a")})
+Rule(targets={Abstract("b")})
+Rule(targets={Abstract("c")})

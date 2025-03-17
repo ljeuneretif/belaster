@@ -1,0 +1,10 @@
+
+_belaster()
+{
+  local cur opts
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  opts=`bash-completer-helper-for-belaster`
+  COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+  return 0
+}
+complete -F _belaster belaster

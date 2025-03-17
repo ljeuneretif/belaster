@@ -1,0 +1,4 @@
+from belaster import *
+
+Rule(targets={Abstract("all"), Abstract("install")})
+Rule(targets={Abstract("clean")})
