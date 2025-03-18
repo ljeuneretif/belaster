@@ -6,7 +6,7 @@ filename = "blank"
 
 
 def touch_file(env):
-	Path(filename).touch()
+	Path(make_local_path(filename)).touch()
 
 Rule(
 	targets={File(filename)},
@@ -14,8 +14,9 @@ Rule(
 )
 
 
+
 def remove_file(env):
-	Path(filename).unlink()
+	Path(make_local_path(filename)).unlink()
 
 Rule(
 	targets={Abstract("clean")},

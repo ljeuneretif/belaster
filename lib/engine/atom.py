@@ -1,5 +1,5 @@
 
-from abc import ABC, abstractmethod
+from abc import ABC
 from .application_context_binder import ApplicationContextBinder
 from os import getcwd
 from os.path import getmtime, relpath
@@ -9,61 +9,42 @@ from pathlib import Path
 
 class Atom(ApplicationContextBinder, ABC):
 
-	def __init__(self):
+	__slots__ = ("id")
+
+
+	def _normalize(self, id):
+		NotImplemented
+
+
+	def __init__(self, id):
+		self.id = self._normalize(id)
 		Atom.application_context.all_atoms.add(self)
+		Abstract.application_context.add_atom(self)
 
 
-	@abstractmethod
 	def __str__(self):
-		pass
+		return self.id
 
 
 
 class Abstract(Atom):
 
-	__slots__ = ("name")
-
-
-	def __init__(self, name):
-		super().__init__()
-		self.name = name
-		Abstract.application_context.add_atom(self, name, name)
-	
-
-	def __str__(self):
-		return self.name
+	def _normalize(self, id):
+		return id
 
 
 
 class AtomPath(Atom):
 
-	__slots__ = ("path")
-
-
-	def __init__(self, path):
-		super().__init__()
-		# The User gives the path relative to the Belaster file.
-		# One can see the Belaster file as the root of the tree of resources it manages.
-		self.path = Path(AtomPath.application_context.belaster_file_directory + "/" + path)
-		# The path is entered in the command-line relatively to the current working directory.
-		AtomPath.application_context.add_atom(
-			self,
-			relpath(path=self.path, start=AtomPath.application_context.belaster_file_directory),
-			relpath(path=self.path, start=getcwd()),
-		)
-	
-
-	def __str__(self):
-		# The path of the atom is printed relative to the caller's current working directory.
-		# This is coherent with the behaviour of bash, where the paths are described relatively
-		# to the current working directory.
-		# This is coherence with bash helps with automation.
-		return relpath(path=self.path.resolve(), start=getcwd())
+	def _normalize(self, id):
+		p = AtomPath.application_context.belaster_file_directory + "/" + id
+		path = relpath(path=p, start=getcwd())
+		return path
 
 
 	def last_modification_timestamp(self):
-		return getmtime(self.path)
-	
+		return getmtime(self.id)
+
 
 	def exists(self):
 		NotImplemented
@@ -72,16 +53,16 @@ class AtomPath(Atom):
 
 class File(AtomPath):
 	def exists(self):
-		return self.path.is_file()
+		return Path(self.id).is_file()
 
 
 
 class Directory(AtomPath):
 	def exists(self):
-		return self.path.is_dir()
+		return Path(self.id).is_dir()
 
 
 
 class SymbolicLink(AtomPath):
 	def exists(self):
-		return self.path.is_symlink()
+		return Path(self.id).is_symlink()

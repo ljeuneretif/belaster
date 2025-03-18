@@ -20,6 +20,7 @@ def test_file_update():
 	path_source.touch()
 	with open(p_source, "w"):
 		pass
+	assert path_source.is_file()
 	
 	# Remove the target file.
 	if exists(p_target):

@@ -100,13 +100,13 @@ class Arguments(ApplicationContextBinder):
 
 	def __is_target(self):
 		# `self.arg` may be a target.
-		if self.arg in Arguments.application_context.map_cwd_relative_name_to_targets:
+		if self.arg in Arguments.application_context.map_name_to_atoms:
 			if self.awaits_short_option:
 				# Bad format to write something like
 				# "-starget" for "-s target".
 				raise ArgumentExpectedShortOptionError(self.arg)
 			self.goals.append(
-				Arguments.application_context.map_cwd_relative_name_to_targets[self.arg]
+				Arguments.application_context.map_name_to_atoms[self.arg]
 			)
 			# The loop can immediately process the next argument.
 			return True

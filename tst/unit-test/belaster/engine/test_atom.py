@@ -29,26 +29,22 @@ def test_string_symboliclink(application_context):
 # Test the mappings from strings to atoms.
 def test_maps_name_to_abstract(application_context):
 	a = Abstract(abstractname)
-	assert application_context.map_belaster_name_to_targets == {abstractname: a}
-	assert application_context.map_cwd_relative_name_to_targets == {abstractname: a}
+	assert application_context.map_name_to_atoms == {abstractname: a}
 
 
 def test_maps_name_to_directory(application_context):
 	a = Directory(filename)
-	assert application_context.map_belaster_name_to_targets == {filename: a}
-	assert application_context.map_cwd_relative_name_to_targets == {filename: a}
+	assert application_context.map_name_to_atoms == {filename: a}
 
 
 def test_maps_name_to_file(application_context):
 	a = File(filename)
-	assert application_context.map_belaster_name_to_targets == {filename: a}
-	assert application_context.map_cwd_relative_name_to_targets == {filename: a}
+	assert application_context.map_name_to_atoms == {filename: a}
 
 
 def test_maps_name_to_symbolic_link(application_context):
 	a = SymbolicLink(filename)
-	assert application_context.map_belaster_name_to_targets == {filename: a}
-	assert application_context.map_cwd_relative_name_to_targets == {filename: a}
+	assert application_context.map_name_to_atoms == {filename: a}
 
 
 def test_duplicate(application_context):

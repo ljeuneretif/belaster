@@ -50,7 +50,7 @@ DEST_EXE_BELASTER_PATH=$(DEST_LOCAL_EXECUTABLES)/$(BELASTER_CLI_NAME)
 ## Bash autocomplete script.
 ## Relies on a helper written in Python.
 SRC_BASH_COMPLETER_PATH=exe/bash-completer
-DEST_BASH_COMPLETER_PATH=/etc/bash_completion.d/$(BELASTER_CLI_NAME)
+DEST_BASH_COMPLETER_PATH=/etc/bash_completion.d/_$(BELASTER_CLI_NAME)
 
 ## Bash autocomplete helper.
 DEST_BASH_COMPLETER_HELPER_PATH=$(DEST_LOCAL_EXECUTABLES)/$(DEST_BASH_COMPLETER_HELPER_NAME)

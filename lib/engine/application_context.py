@@ -58,8 +58,7 @@ class ApplicationContext:
 
 		"environment",
 
-		"map_belaster_name_to_targets",
-		"map_cwd_relative_name_to_targets",
+		"map_name_to_atoms",
 
 		"map_name_to_options",
 		"map_variables_to_options",
@@ -80,39 +79,30 @@ class ApplicationContext:
 
 		self.environment = None
 
-		self.map_belaster_name_to_targets = {}
-		self.map_cwd_relative_name_to_targets = {}
+		self.map_name_to_atoms = {}
 
 		self.map_name_to_options = {}
 		self.map_variables_to_options = {}
 
 		self.map_targets_rules = {}
-	
 
-	def add_atom(self, atom, belaster_name, cwd_relative_name):
-		if belaster_name in self.map_belaster_name_to_targets:
+
+	def add_atom(self, atom):
+		if atom.id in self.map_name_to_atoms:
 			raise AtomDuplicateNameError(
 				atom,
-				self.map_belaster_name_to_targets[belaster_name],
-				belaster_name,
-				)
-		self.map_belaster_name_to_targets[belaster_name] = atom
+				self.map_name_to_atoms[atom.id],
+				atom.id
+			)
+		self.map_name_to_atoms[atom.id] = atom
 
-		if cwd_relative_name in self.map_cwd_relative_name_to_targets:
-			raise AtomDuplicateNameError(
-				atom,
-				self.map_cwd_relative_name_to_targets[cwd_relative_name],
-				cwd_relative_name,
-				)
-		self.map_cwd_relative_name_to_targets[cwd_relative_name] = atom
-	
 
 	def add_option(self, option):
 		self.all_options.add(option)
 
 		for n in option.names:
 			self.map_name_to_options[n.fullname] = option
-	
+
 
 	def add_option_variable_name(self, option):
 		var = option.variable_name
@@ -121,7 +111,6 @@ class ApplicationContext:
 				option0=self.map_variables_to_options[var], option1=option, variable_name=var
 				)
 		self.map_variables_to_options[var] = option
-
 
 
 	def add_rule(self, rule):
@@ -137,4 +126,3 @@ class ApplicationContext:
 				self.map_targets_rules[t] = rule
 
 		self.dependency_hypergraph.add_rule(rule)
-

@@ -1,10 +1,57 @@
 #!/usr/bin/env python
 
+
 from belaster.engine.application_context import ApplicationContext
 from belaster.engine.application_context_binder import ApplicationContextBinder
-from belaster.engine.import_belaster_file import BELASTER_FILE_DEFAULT_NAME, import_belaster_file
+from belaster.engine.bash_autocomplete import output_suggestions, SUGGESTION_CODE_PATH
+from belaster.engine.belaster_file import BELASTER_FILE_DEFAULT_NAME, import_belaster_file, is_belaster_file_path, make_belaster_file_path
+from belaster.engine.default_behaviour import OPTIONS_BELASTER_FILE, OPTIONS_HELP, OPTIONS_VERSION, RETURN_CODE_OK, RETURN_CODE_MISSING_BELASTER_FILE
 from belaster.engine.mute_stdout import MuteStdout
 from os import getcwd
+from pathlib import Path
+from sys import argv
+
+
+
+comp_cword = int(argv[1])
+comp_words = argv[2:]
+
+
+result = []
+
+
+# Get the word of the command line where the console cursor is.
+current_word = ""
+if comp_cword < len(comp_words):
+	current_word = comp_words[comp_cword]
+
+
+
+# Default behaviour of belaster.
+
+# Default User Belaster file path.
+belaster_path = getcwd() + "/" + BELASTER_FILE_DEFAULT_NAME
+
+
+if comp_cword == 1:
+	result += OPTIONS_BELASTER_FILE + OPTIONS_HELP + OPTIONS_VERSION
+
+elif comp_cword == 2 and comp_words[1] in OPTIONS_BELASTER_FILE:
+	print(SUGGESTION_CODE_PATH)
+	exit(RETURN_CODE_OK)
+
+
+
+if comp_cword >= 3 and comp_words[1] in OPTIONS_BELASTER_FILE \
+		and is_belaster_file_path(comp_words[2]):
+	belaster_path=make_belaster_file_path(comp_words[2])
+
+
+
+if not Path(belaster_path).is_file():
+	output_suggestions(result)
+	exit(RETURN_CODE_OK)
+
 
 
 # Create application context and bind it.
@@ -14,15 +61,18 @@ ApplicationContextBinder.application_context = context
 
 with MuteStdout():
 	# Load User's Belaster file.
-	ubm = import_belaster_file(path=getcwd(), filename=BELASTER_FILE_DEFAULT_NAME)
+	ubm = import_belaster_file(path=belaster_path)
 
 
 
-targets = list([
-	p
-		for p in context.map_cwd_relative_name_to_targets
-		if context.map_cwd_relative_name_to_targets[p] in context.all_targets
-])
+targets = [ p.id for p in context.all_targets ]
+options = list( context.map_name_to_options.keys() )
 
 
-print(" ".join(sorted(targets)))
+result += targets + options
+
+
+output_suggestions(result)
+
+
+exit(RETURN_CODE_OK)

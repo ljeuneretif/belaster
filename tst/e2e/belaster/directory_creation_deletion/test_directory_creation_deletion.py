@@ -1,4 +1,5 @@
 
+from os import rmdir
 from os.path import exists
 from pathlib import Path
 from subprocess import run
@@ -9,6 +10,9 @@ from toolkit import get_directory
 def test_directory_creation_deletion():
 	current_directory = get_directory(__file__)
 	directory_path = current_directory + "/blank"
+
+	if Path(directory_path).is_dir():
+		rmdir(directory_path)
 	
 	run(
 		"belaster blank",
