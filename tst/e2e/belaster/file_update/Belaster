@@ -1,0 +1,17 @@
+from belaster import *
+from shutil import copyfile
+
+
+source = "source"
+target = "target"
+
+
+def copy(env):
+	copyfile(source, target)
+
+
+Rule(
+	targets={File(target)},
+	prerequisites=[File(source)],
+	recipe=[copy]
+)

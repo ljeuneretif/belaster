@@ -17,7 +17,12 @@ with MuteStdout():
 	ubm = import_belaster_file(path=getcwd(), filename=BELASTER_FILE_DEFAULT_NAME)
 
 
-targets = list(context.map_cwd_relative_name_to_targets.keys())
+
+targets = list([
+	p
+		for p in context.map_cwd_relative_name_to_targets
+		if context.map_cwd_relative_name_to_targets[p] in context.all_targets
+])
 
 
 print(" ".join(sorted(targets)))
