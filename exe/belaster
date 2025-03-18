@@ -1,12 +1,47 @@
 #!/usr/bin/env python
 
-from sys import argv
+
+from belaster import __version__
 from belaster.engine.application_context import ApplicationContext
 from belaster.engine.application_context_binder import ApplicationContextBinder
 from belaster.engine.arguments import Arguments
+from belaster.engine.default_behaviour import default_help_message, error_message_missing_belaster_file, OPTIONS_BELASTER_FILE, OPTIONS_HELP, OPTIONS_VERSION, RETURN_CODE_OK, RETURN_CODE_MISSING_BELASTER_FILE
 from belaster.engine.import_belaster_file import BELASTER_FILE_DEFAULT_NAME, import_belaster_file
 from belaster.engine.rule_applier import RuleApplier
 from os import getcwd
+from pathlib import Path
+from sys import argv
+
+
+
+print(getcwd())
+
+
+# Default behaviour of belaster
+if argv[1] in OPTIONS_VERSION:
+	print("version", __version__)
+	exit(RETURN_CODE_OK)
+
+
+belaster_script_path = getcwd()
+index_start_user_args = 1
+custom_path = False
+
+if argv[1] in OPTIONS_BELASTER_FILE:
+	belaster_script_path = argv[2]
+	index_start_user_args = 3
+	custom_path = True
+
+
+if not Path(belaster_script_path + BELASTER_FILE_DEFAULT_NAME).is_file():
+	if argv[1] in OPTIONS_HELP:
+		print(default_help_message())
+		error_code = RETURN_CODE_OK
+	else:
+		print(error_message_missing_belaster_file(custom_path, belaster_script_path))
+		error_code = RETURN_CODE_MISSING_BELASTER_FILE
+	exit(error_code)
+
 
 
 # Create application context and bind it.
@@ -27,12 +62,17 @@ context.dependency_hypergraph.build_topological_ordering_of_hyperedges()
 
 # Parse the command-line arguments.
 cli_args = Arguments()
-cli_args.initialize(argv[1:])
+cli_args.initialize(argv[index_start_user_args:])
 cli_args.parse()
 
 context.environment = cli_args.environment
+
 
 # Apply the goals given in the command line.
 rule_applier = RuleApplier()
 rule_applier.initialize(cli_args.goals)
 rule_applier.apply()
+
+
+
+exit(RETURN_CODE_OK)

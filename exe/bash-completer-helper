@@ -1,10 +1,21 @@
 #!/usr/bin/env python
 
+
 from belaster.engine.application_context import ApplicationContext
 from belaster.engine.application_context_binder import ApplicationContextBinder
 from belaster.engine.import_belaster_file import BELASTER_FILE_DEFAULT_NAME, import_belaster_file
+from belaster.engine.default_behaviour import OPTIONS_HELP, OPTIONS_VERSION, RETURN_CODE_OK, RETURN_CODE_MISSING_BELASTER_FILE
 from belaster.engine.mute_stdout import MuteStdout
 from os import getcwd
+from pathlib import Path
+
+
+
+# Default behaviour of belaster.
+if not Path(BELASTER_FILE_DEFAULT_NAME).is_file():
+	print(" ".join(OPTIONS_HELP + OPTIONS_VERSION))
+	exit(RETURN_CODE_OK)
+
 
 
 # Create application context and bind it.
@@ -26,3 +37,7 @@ targets = list([
 
 
 print(" ".join(sorted(targets)))
+
+
+
+exit(RETURN_CODE_OK)
