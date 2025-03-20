@@ -1,14 +1,21 @@
 
 _belaster()
 {
-  local cur opts
+	local cur opts
+	local IFS=$'\n'
 
-  cur="${COMP_WORDS[COMP_CWORD]}"
-  opts=$(bash-completer-helper-for-belaster $COMP_CWORD ${COMP_WORDS[@]})
+	cur="${COMP_WORDS[COMP_CWORD]}"
+	opts=$(bash-completer-helper-for-belaster $COMP_CWORD ${COMP_WORDS[@]})
 
-  COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+	if [[ ${opts:0:1} == "1" ]]; then
+		COMPREPLY=( $(compgen -W "${opts:2}" -- ${cur}) )
+	fi
 
-  return 0
+	if [[ ${opts:0:1} == "2" ]]; then
+		COMPREPLY=( $(compgen -df -- ${cur}) )
+	fi
+
+	return 0
 }
 
-complete -F _belaster belaster
+complete -o filenames -F _belaster belaster

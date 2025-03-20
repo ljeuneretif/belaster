@@ -3,17 +3,62 @@
 
 from belaster.engine.application_context import ApplicationContext
 from belaster.engine.application_context_binder import ApplicationContextBinder
-from belaster.engine.import_belaster_file import BELASTER_FILE_DEFAULT_NAME, import_belaster_file
-from belaster.engine.default_behaviour import OPTIONS_HELP, OPTIONS_VERSION, RETURN_CODE_OK, RETURN_CODE_MISSING_BELASTER_FILE
+from belaster.engine.belaster_file import BELASTER_FILE_DEFAULT_NAME, import_belaster_file, is_belaster_file_path, make_belaster_file_path
+from belaster.engine.default_behaviour import OPTIONS_BELASTER_FILE, OPTIONS_HELP, OPTIONS_VERSION, RETURN_CODE_OK, RETURN_CODE_MISSING_BELASTER_FILE
 from belaster.engine.mute_stdout import MuteStdout
+from enum import Enum
 from os import getcwd
 from pathlib import Path
+from sys import argv
+
+
+
+argc_to_belaster = int(argv[1])
+argv_to_belaster = argv[2:]
+
+
+result = []
+
+
+class BashCompleterCase(Enum):
+	TARGETS_OPTIONS = 1
+	DIRECTORY = 2
 
 
 
 # Default behaviour of belaster.
-if not Path(BELASTER_FILE_DEFAULT_NAME).is_file():
-	print(" ".join(OPTIONS_HELP + OPTIONS_VERSION))
+belaster_path = getcwd() + "/" + BELASTER_FILE_DEFAULT_NAME
+
+
+if len(argv_to_belaster) <= 2 and argc_to_belaster <= 1:
+	result = OPTIONS_BELASTER_FILE + OPTIONS_HELP + OPTIONS_VERSION
+
+elif len(argv_to_belaster) in [2, 3] and argc_to_belaster == 2 \
+		and argv_to_belaster[1] in OPTIONS_BELASTER_FILE:
+	print(BashCompleterCase.DIRECTORY.value)
+	exit(RETURN_CODE_OK)
+
+
+
+with open("flibidi.txt", "a") as f:
+	f.write(f"belaster_path={belaster_path}\n")
+
+
+
+if len(argv_to_belaster) >= 2 and argv_to_belaster[1] in OPTIONS_BELASTER_FILE \
+		and argc_to_belaster >= 3 and is_belaster_file_path(argv_to_belaster[2]):
+	belaster_path=make_belaster_file_path(argv_to_belaster[2])
+	with open("flibidi.txt", "a") as f:
+		f.write("¤¤¤¤¤".join(argv) + "\n" + belaster_path + "\n")
+
+
+
+if not Path(belaster_path).is_file():
+	with open("flibidi.txt", "a") as f:
+		f.write("\n".join(sorted(result)))
+		f.write("PAS BELASTER FILE.\n")
+	print(BashCompleterCase.TARGETS_OPTIONS.value)
+	print("\n".join(sorted(result)))
 	exit(RETURN_CODE_OK)
 
 
@@ -25,19 +70,26 @@ ApplicationContextBinder.application_context = context
 
 with MuteStdout():
 	# Load User's Belaster file.
-	ubm = import_belaster_file(path=getcwd(), filename=BELASTER_FILE_DEFAULT_NAME)
+	ubm = import_belaster_file(path=belaster_path)
 
 
 
 targets = list([
 	p
-		for p in context.map_cwd_relative_name_to_targets
-		if context.map_cwd_relative_name_to_targets[p] in context.all_targets
+		for p in context.map_name_to_targets
+		if context.map_name_to_targets[p] in context.all_targets
 ])
 
 
-print(" ".join(sorted(targets)))
+result += targets
 
+
+print(BashCompleterCase.TARGETS_OPTIONS.value)
+print("\n".join(sorted(result)))
+
+
+with open("flibidi.txt", "a") as f:
+	f.write("--------result----------------\n" + "\n".join(sorted(result)) + "\n--------------\n")
 
 
 exit(RETURN_CODE_OK)
