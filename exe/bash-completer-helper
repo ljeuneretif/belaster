@@ -3,6 +3,7 @@
 
 from belaster.engine.application_context import ApplicationContext
 from belaster.engine.application_context_binder import ApplicationContextBinder
+from belaster.engine.bash_autocomplete import output_suggestions, SUGGESTION_CODE_PATH
 from belaster.engine.belaster_file import BELASTER_FILE_DEFAULT_NAME, import_belaster_file, is_belaster_file_path, make_belaster_file_path
 from belaster.engine.default_behaviour import OPTIONS_BELASTER_FILE, OPTIONS_HELP, OPTIONS_VERSION, RETURN_CODE_OK, RETURN_CODE_MISSING_BELASTER_FILE
 from belaster.engine.mute_stdout import MuteStdout
@@ -12,30 +13,17 @@ from sys import argv
 
 
 
-with open("flibidi.txt", "a") as f:
-	f.write(
-		"=======================================\n" \
-			+ "\n".join(argv) \
-			+ "\n=======================================\n"
-		)
-
-
-
-argc_of_belaster = int(argv[1])
-argv_of_belaster = argv[2:]
+comp_cword = int(argv[1])
+comp_words = argv[2:]
 
 
 result = []
 
 
+# Get the word of the command line where the console cursor is.
 current_word = ""
-if argc_of_belaster < len(argv_of_belaster):
-	current_word = argv_of_belaster[argc_of_belaster]
-
-
-def trim_propositions():
-	global result
-	result = [s for s in result if s.startswith(current_word)]
+if comp_cword < len(comp_words):
+	current_word = comp_words[comp_cword]
 
 
 
@@ -45,37 +33,23 @@ def trim_propositions():
 belaster_path = getcwd() + "/" + BELASTER_FILE_DEFAULT_NAME
 
 
-if len(argv_of_belaster) <= 2 and argc_of_belaster <= 1:
+if comp_cword == 1:
 	result += OPTIONS_BELASTER_FILE + OPTIONS_HELP + OPTIONS_VERSION
 
-elif len(argv_of_belaster) in [2, 3] and argc_of_belaster == 2 \
-		and argv_of_belaster[1] in OPTIONS_BELASTER_FILE:
-	trim_propositions()
-	with open("flibidi.txt", "a") as f:
-		f.write("TRIMED.\n" + "\n".join(sorted(result)) + "\n")
+elif comp_cword == 2 and comp_words[1] in OPTIONS_BELASTER_FILE:
+	print(SUGGESTION_CODE_PATH)
 	exit(RETURN_CODE_OK)
 
 
 
-if len(argv_of_belaster) >= 2 and argv_of_belaster[1] in OPTIONS_BELASTER_FILE \
-		and argc_of_belaster >= 3 and is_belaster_file_path(argv_of_belaster[2]):
-	belaster_path=make_belaster_file_path(argv_of_belaster[2])
-
-
-
-with open("flibidi.txt", "a") as f:
-	f.write(f"belaster_path={belaster_path}\n")
+if comp_cword >= 3 and comp_words[1] in OPTIONS_BELASTER_FILE \
+		and is_belaster_file_path(comp_words[2]):
+	belaster_path=make_belaster_file_path(comp_words[2])
 
 
 
 if not Path(belaster_path).is_file():
-	with open("flibidi.txt", "a") as f:
-		f.write("\n".join(sorted(result)) + "\n")
-		f.write("PAS BELASTER FILE.\n")
-	trim_propositions()
-	print("\n".join(sorted(result)))
-	with open("flibidi.txt", "a") as f:
-		f.write("TRIMED.\n" + "\n".join(sorted(result)) + "\n")
+	output_suggestions(result)
 	exit(RETURN_CODE_OK)
 
 
@@ -92,20 +66,13 @@ with MuteStdout():
 
 
 targets = [ p.id for p in context.all_targets ]
+options = list( context.map_name_to_options.keys() )
 
 
-with open("flibidi.txt", "a") as f:
-	f.write("--------flop----------------\n" + "\n".join(targets) + "\n--------------\n")
+result += targets + options
 
 
-result += targets
-
-
-print("\n".join(sorted(result)))
-
-
-with open("flibidi.txt", "a") as f:
-	f.write("--------result----------------\n" + "\n".join(sorted(result)) + "\n--------------\n")
+output_suggestions(result)
 
 
 exit(RETURN_CODE_OK)
