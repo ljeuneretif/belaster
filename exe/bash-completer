@@ -1,19 +1,17 @@
 
-_belaster()
+function join_by
 {
-	local cur opts
+  local d=${1-} f=${2-}
+  if shift 2; then
+    printf %s "$f" "${@/#/$d}"
+  fi
+}
+
+function _belaster
+{
 	local IFS=$'\n'
 
-	cur="${COMP_WORDS[COMP_CWORD]}"
-	opts=$(bash-completer-helper-for-belaster $COMP_CWORD ${COMP_WORDS[@]})
-
-	if [[ ${opts:0:1} == "1" ]]; then
-		COMPREPLY=( $(compgen -W "${opts:2}" -- ${cur}) )
-	fi
-
-	if [[ ${opts:0:1} == "2" ]]; then
-		COMPREPLY=( $(compgen -o filenames -df -- ${cur}) )
-	fi
+	COMPREPLY=( $(bash-completer-helper-for-belaster $COMP_CWORD $(join_by $'\n' "${COMP_WORDS[@]}")) )
 
 	return 0
 }
