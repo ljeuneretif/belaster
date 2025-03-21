@@ -7,7 +7,7 @@ target = "target"
 
 
 def copy(env):
-	copyfile(source, target)
+	copyfile(make_local_path(source), make_local_path(target))
 
 
 Rule(

@@ -12,10 +12,10 @@ _belaster()
 	fi
 
 	if [[ ${opts:0:1} == "2" ]]; then
-		COMPREPLY=( $(compgen -df -- ${cur}) )
+		COMPREPLY=( $(compgen -o filenames -df -- ${cur}) )
 	fi
 
 	return 0
 }
 
-complete -o filenames -F _belaster belaster
+complete -F _belaster belaster

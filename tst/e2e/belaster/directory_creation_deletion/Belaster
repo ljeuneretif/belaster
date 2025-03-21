@@ -6,7 +6,7 @@ dirname = "blank"
 
 
 def touch_dir(env):
-	makedirs(dirname)
+	makedirs(make_local_path(dirname))
 
 Rule(
 	targets={Directory(dirname)},
@@ -15,7 +15,7 @@ Rule(
 
 
 def rm_dir(env):
-	rmdir(dirname)
+	rmdir(make_local_path(dirname))
 
 Rule(
 	targets={Abstract("clean")},

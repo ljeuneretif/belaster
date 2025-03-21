@@ -13,11 +13,8 @@ from sys import argv
 
 
 
-argc_to_belaster = int(argv[1])
-argv_to_belaster = argv[2:]
-
-
-result = []
+argc_of_belaster = int(argv[1])
+argv_of_belaster = argv[2:]
 
 
 class BashCompleterCase(Enum):
@@ -25,18 +22,31 @@ class BashCompleterCase(Enum):
 	DIRECTORY = 2
 
 
+result = []
+
+
 
 # Default behaviour of belaster.
+
+# Default User Belaster file path.
 belaster_path = getcwd() + "/" + BELASTER_FILE_DEFAULT_NAME
 
 
-if len(argv_to_belaster) <= 2 and argc_to_belaster <= 1:
-	result = OPTIONS_BELASTER_FILE + OPTIONS_HELP + OPTIONS_VERSION
+if len(argv_of_belaster) <= 2 and argc_of_belaster <= 1:
+	result += OPTIONS_BELASTER_FILE + OPTIONS_HELP + OPTIONS_VERSION
 
-elif len(argv_to_belaster) in [2, 3] and argc_to_belaster == 2 \
-		and argv_to_belaster[1] in OPTIONS_BELASTER_FILE:
+elif len(argv_of_belaster) in [2, 3] and argc_of_belaster == 2 \
+		and argv_of_belaster[1] in OPTIONS_BELASTER_FILE:
 	print(BashCompleterCase.DIRECTORY.value)
 	exit(RETURN_CODE_OK)
+
+
+
+if len(argv_of_belaster) >= 2 and argv_of_belaster[1] in OPTIONS_BELASTER_FILE \
+		and argc_of_belaster >= 3 and is_belaster_file_path(argv_of_belaster[2]):
+	belaster_path=make_belaster_file_path(argv_of_belaster[2])
+	with open("flibidi.txt", "a") as f:
+		f.write("[" + " ".join(argv) + "]\n")
 
 
 
@@ -45,17 +55,9 @@ with open("flibidi.txt", "a") as f:
 
 
 
-if len(argv_to_belaster) >= 2 and argv_to_belaster[1] in OPTIONS_BELASTER_FILE \
-		and argc_to_belaster >= 3 and is_belaster_file_path(argv_to_belaster[2]):
-	belaster_path=make_belaster_file_path(argv_to_belaster[2])
-	with open("flibidi.txt", "a") as f:
-		f.write("¤¤¤¤¤".join(argv) + "\n" + belaster_path + "\n")
-
-
-
 if not Path(belaster_path).is_file():
 	with open("flibidi.txt", "a") as f:
-		f.write("\n".join(sorted(result)))
+		f.write("\n".join(sorted(result)) + "\n")
 		f.write("PAS BELASTER FILE.\n")
 	print(BashCompleterCase.TARGETS_OPTIONS.value)
 	print("\n".join(sorted(result)))
@@ -74,11 +76,11 @@ with MuteStdout():
 
 
 
-targets = list([
-	p
-		for p in context.map_name_to_targets
-		if context.map_name_to_targets[p] in context.all_targets
-])
+targets = [ p.id for p in context.all_targets ]
+
+
+with open("flibidi.txt", "a") as f:
+	f.write("--------flop----------------\n" + "\n".join(targets) + "\n--------------\n")
 
 
 result += targets

@@ -1,5 +1,5 @@
 
-from abc import ABC, abstractmethod
+from abc import ABC
 from .application_context_binder import ApplicationContextBinder
 from os import getcwd
 from os.path import getmtime, relpath

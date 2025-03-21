@@ -58,7 +58,7 @@ class ApplicationContext:
 
 		"environment",
 
-		"map_name_to_targets",
+		"map_name_to_atoms",
 
 		"map_name_to_options",
 		"map_variables_to_options",
@@ -79,7 +79,7 @@ class ApplicationContext:
 
 		self.environment = None
 
-		self.map_name_to_targets = {}
+		self.map_name_to_atoms = {}
 
 		self.map_name_to_options = {}
 		self.map_variables_to_options = {}
@@ -88,13 +88,13 @@ class ApplicationContext:
 
 
 	def add_atom(self, atom):
-		if atom.id in self.map_name_to_targets:
+		if atom.id in self.map_name_to_atoms:
 			raise AtomDuplicateNameError(
 				atom,
-				self.map_name_to_targets[atom.id],
+				self.map_name_to_atoms[atom.id],
 				atom.id
 			)
-		self.map_name_to_targets[atom.id] = atom
+		self.map_name_to_atoms[atom.id] = atom
 
 
 	def add_option(self, option):
