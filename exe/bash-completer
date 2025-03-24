@@ -9,6 +9,7 @@ function _belaster
 
 	if [[ ${opts:0:1} == "0" ]]; then
 		COMPREPLY=( $(compgen -W "${opts:2}" -- ${cur}) )
+		compopt +o filenames
 	fi
 
 	if [[ ${opts:0:1} == "1" ]]; then
